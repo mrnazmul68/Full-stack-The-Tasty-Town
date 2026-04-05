@@ -75,9 +75,9 @@ const request = async (path, options = {}) => {
   return data ?? null;
 };
 
-const withAdminAuth = (adminToken) => ({
+const withAuth = (token) => ({
   headers: {
-    Authorization: `Bearer ${adminToken}`,
+    Authorization: `Bearer ${token}`,
   },
 });
 
@@ -128,70 +128,70 @@ export const customerApi = {
 };
 
 export const adminApi = {
-  getBootstrap: (adminToken) =>
+  getBootstrap: (token) =>
     request("/admin/bootstrap", {
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
-  updateOrderStatus: (adminToken, orderId, payload) =>
+  updateOrderStatus: (token, orderId, payload) =>
     request(`/admin/orders/${orderId}`, {
       method: "PATCH",
       body: JSON.stringify(payload),
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
-  toggleUserBlock: (adminToken, userId, payload) =>
+  toggleUserBlock: (token, userId, payload) =>
     request(`/admin/users/${userId}/block`, {
       method: "PATCH",
       body: JSON.stringify(payload),
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
-  deleteUser: (adminToken, userId) =>
+  deleteUser: (token, userId) =>
     request(`/admin/users/${userId}`, {
       method: "DELETE",
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
-  deleteReview: (adminToken, reviewId) =>
+  deleteReview: (token, reviewId) =>
     request(`/admin/reviews/${reviewId}`, {
       method: "DELETE",
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
-  updateSettings: (adminToken, payload) =>
+  updateSettings: (token, payload) =>
     request("/admin/settings", {
       method: "PUT",
       body: JSON.stringify(payload),
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
-  createMenuCategory: (adminToken, payload) =>
+  createMenuCategory: (token, payload) =>
     request("/admin/menu-categories", {
       method: "POST",
       body: JSON.stringify(payload),
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
-  updateMenuCategory: (adminToken, categoryId, payload) =>
+  updateMenuCategory: (token, categoryId, payload) =>
     request(`/admin/menu-categories/${categoryId}`, {
       method: "PATCH",
       body: JSON.stringify(payload),
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
-  deleteMenuCategory: (adminToken, categoryId) =>
+  deleteMenuCategory: (token, categoryId) =>
     request(`/admin/menu-categories/${categoryId}`, {
       method: "DELETE",
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
-  createMenuItem: (adminToken, payload) =>
+  createMenuItem: (token, payload) =>
     request("/admin/menu-items", {
       method: "POST",
       body: JSON.stringify(payload),
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
-  updateMenuItem: (adminToken, itemId, payload) =>
+  updateMenuItem: (token, itemId, payload) =>
     request(`/admin/menu-items/${itemId}`, {
       method: "PATCH",
       body: JSON.stringify(payload),
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
-  deleteMenuItem: (adminToken, itemId) =>
+  deleteMenuItem: (token, itemId) =>
     request(`/admin/menu-items/${itemId}`, {
       method: "DELETE",
-      ...withAdminAuth(adminToken),
+      ...withAuth(token),
     }),
 };

@@ -16,17 +16,19 @@ router.post("/login", async (req, res) => {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
+    console.log(`Login attempt for: ${normalizedEmail}`);
 
-    // Check for Admin login first
+    // Check for Admin login first (hardcoded from env)
     const adminCreds = getAdminCredentials();
     if (normalizedEmail === adminCreds.email && password === adminCreds.password) {
-      const adminToken = createAdminToken({
+      console.log("Admin login successful via hardcoded credentials");
+      const token = createAdminToken({
         email: adminCreds.email,
         fullName: adminCreds.fullName,
       });
 
       return res.json({
-        adminToken,
+        token,
         user: {
           id: "admin",
           email: adminCreds.email,
@@ -36,35 +38,42 @@ router.post("/login", async (req, res) => {
       });
     }
 
+    console.log("Searching for customer in database...");
     const customer = await Customer.findOne({
       email: normalizedEmail,
     }).select("+password");
 
     if (!customer) {
+      console.log(`Customer not found: ${normalizedEmail}`);
       return res.status(401).json({
         message: "Invalid email or password.",
       });
     }
 
+    console.log("Comparing password...");
     const isMatch = await customer.comparePassword(password);
     if (!isMatch) {
+      console.log(`Password mismatch for: ${normalizedEmail}`);
       return res.status(401).json({
         message: "Invalid email or password.",
       });
     }
 
     if (customer.isBlocked) {
+      console.log(`Customer is blocked: ${normalizedEmail}`);
       return res.status(403).json({
         message: "Your account has been blocked. Please contact support.",
       });
     }
 
+    console.log("Generating JWT token...");
     const token = jwt.sign(
       { id: customer._id, email: customer.email, role: customer.role },
       process.env.JWT_SECRET || "tastytown-secret-key-fallback-123",
       { expiresIn: "7d" },
     );
 
+    console.log(`Login successful for: ${normalizedEmail}`);
     res.json({
       token,
       user: {
@@ -75,10 +84,11 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Login error:", error);
+    console.error("Login error full details:", error);
     res.status(500).json({
-      message: "An error occurred during login. Please try again later.",
+      message: `Login failed: ${error.message}`,
       error: error.message,
+      stack: error.stack,
     });
   }
 });
@@ -94,29 +104,35 @@ router.post("/register", async (req, res) => {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
+    console.log(`Registration attempt for: ${normalizedEmail}`);
 
+    console.log("Checking if email already exists...");
     const existingCustomer = await Customer.findOne({
       email: normalizedEmail,
     });
 
     if (existingCustomer) {
+      console.log(`Email already registered: ${normalizedEmail}`);
       return res.status(400).json({
         message: "Email already registered.",
       });
     }
 
+    console.log("Creating new customer...");
     const customer = await Customer.create({
       fullName: fullName?.trim(),
       email: normalizedEmail,
       password,
     });
 
+    console.log("Generating JWT token...");
     const token = jwt.sign(
       { id: customer._id, email: customer.email, role: customer.role },
       process.env.JWT_SECRET || "tastytown-secret-key-fallback-123",
       { expiresIn: "7d" },
     );
 
+    console.log(`Registration successful for: ${normalizedEmail}`);
     res.status(201).json({
       token,
       user: {
@@ -127,10 +143,11 @@ router.post("/register", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("Registration error full details:", error);
     res.status(500).json({
-      message: "An error occurred during registration. Please try again later.",
+      message: `Registration failed: ${error.message}`,
       error: error.message,
+      stack: error.stack,
     });
   }
 });

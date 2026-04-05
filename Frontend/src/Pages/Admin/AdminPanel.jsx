@@ -41,7 +41,7 @@ const sections = [
 const emptyCategoryForm = { name: "", slug: "", description: "", imageKey: "", imageUrl: "", sortOrder: 0 };
 const emptyItemForm = { name: "", description: "", price: "", categorySlug: "", imageKey: "", imageUrl: "", sortOrder: 0, isFeatured: false };
 
-const AdminPanel = ({ adminToken, onCatalogRefresh, onUnauthorized, siteSettings }) => {
+const AdminPanel = ({ token, onCatalogRefresh, onUnauthorized, siteSettings }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [adminData, setAdminData] = useState(null);
@@ -59,13 +59,13 @@ const AdminPanel = ({ adminToken, onCatalogRefresh, onUnauthorized, siteSettings
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (!adminToken) return;
+    if (!token) return;
     let isActive = true;
 
     const fetchAdminData = async () => {
       setIsLoading(true);
       try {
-        const data = await adminApi.getBootstrap(adminToken);
+        const data = await adminApi.getBootstrap(token);
         if (!isActive) return;
         setAdminData(data);
         setSettingsForm(data.settings || siteSettings);
@@ -82,12 +82,12 @@ const AdminPanel = ({ adminToken, onCatalogRefresh, onUnauthorized, siteSettings
 
     void fetchAdminData();
     return () => { isActive = false; };
-  }, [adminToken, onUnauthorized, siteSettings]);
+  }, [token, onUnauthorized, siteSettings]);
 
   const loadAdminData = async (options = {}) => {
     if (options.showLoading !== false) setIsLoading(true);
     try {
-      const data = await adminApi.getBootstrap(adminToken);
+      const data = await adminApi.getBootstrap(token);
       setAdminData(data);
       setSettingsForm(data.settings || siteSettings);
     } catch (error) {
@@ -302,28 +302,28 @@ const AdminPanel = ({ adminToken, onCatalogRefresh, onUnauthorized, siteSettings
           <Route path="orders" element={
             <Orders 
               orders={adminData?.orders || []} 
-              adminToken={adminToken} 
+              adminToken={token} 
               handleAction={handleAction} 
             />
           } />
           <Route path="users" element={
             <Users 
               users={adminData?.users || []} 
-              adminToken={adminToken} 
+              adminToken={token} 
               handleAction={handleAction} 
             />
           } />
           <Route path="reviews" element={
             <Reviews 
               reviews={adminData?.reviews || []} 
-              adminToken={adminToken} 
+              adminToken={token} 
               handleAction={handleAction} 
             />
           } />
           <Route path="menus" element={
             <Menus 
               categories={adminData?.categories || []} 
-              adminToken={adminToken} 
+              adminToken={token} 
               handleAction={handleAction} 
               editingCategory={editingCategory}
               setEditingCategory={setEditingCategory}
@@ -337,7 +337,7 @@ const AdminPanel = ({ adminToken, onCatalogRefresh, onUnauthorized, siteSettings
             <Items 
               items={adminData?.items || []} 
               categories={adminData?.categories || []} 
-              adminToken={adminToken} 
+              adminToken={token} 
               handleAction={handleAction} 
               editingItem={editingItem}
               setEditingItem={setEditingItem}
@@ -351,7 +351,7 @@ const AdminPanel = ({ adminToken, onCatalogRefresh, onUnauthorized, siteSettings
             <Settings 
               settingsForm={settingsForm} 
               setSettingsForm={setSettingsForm} 
-              adminToken={adminToken} 
+              adminToken={token} 
               handleAction={handleAction} 
               isSaving={isSaving}
             />

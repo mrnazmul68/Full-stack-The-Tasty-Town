@@ -173,7 +173,7 @@ const App = () => {
         {isAdmin && (
           <Route path="/admin/*" element={
             <AdminPanel 
-              adminToken={userProfile.adminToken} 
+              token={userProfile.token} 
               onCatalogRefresh={() => fetchCatalogData()} 
               onUnauthorized={() => { logout(); navigate("/"); }} 
               siteSettings={catalogData.settings} 

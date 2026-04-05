@@ -64,32 +64,45 @@ router.patch("/orders/:id", async (req, res) => {
 router.patch("/users/:id/block", async (req, res) => {
   const isBlocked = Boolean(req.body.isBlocked);
 
-  const customer = await Customer.findByIdAndUpdate(
-    req.params.id,
-    {
-      isBlocked,
-      blockedAt: isBlocked ? new Date() : null,
-    },
-    { new: true },
-  );
+  const targetUser = await Customer.findById(req.params.id);
 
-  if (!customer) {
+  if (!targetUser) {
     return res.status(404).json({
       message: "User not found.",
     });
   }
 
-  res.json(toPublicCustomer(customer));
+  // Prevent blocking an admin
+  if (targetUser.role === "admin") {
+    return res.status(403).json({
+      message: "Admin accounts cannot be blocked.",
+    });
+  }
+
+  targetUser.isBlocked = isBlocked;
+  targetUser.blockedAt = isBlocked ? new Date() : null;
+  await targetUser.save();
+
+  res.json(toPublicCustomer(targetUser));
 });
 
 router.delete("/users/:id", async (req, res) => {
-  const customer = await Customer.findByIdAndDelete(req.params.id);
+  const targetUser = await Customer.findById(req.params.id);
 
-  if (!customer) {
+  if (!targetUser) {
     return res.status(404).json({
       message: "User not found.",
     });
   }
+
+  // Prevent deleting an admin
+  if (targetUser.role === "admin") {
+    return res.status(403).json({
+      message: "Admin accounts cannot be deleted.",
+    });
+  }
+
+  await targetUser.deleteOne();
 
   res.json({
     message: "User removed successfully.",

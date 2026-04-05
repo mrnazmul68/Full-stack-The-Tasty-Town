@@ -51,7 +51,7 @@ export const useAuth = () => {
     const profile = sanitizeUserProfile({ 
       ...res.user, 
       rememberMe: creds.rememberMe, 
-      adminToken: res.adminToken || null 
+      token: res.token || null 
     });
     setUserProfile(profile);
     toast.success("Welcome back!");
@@ -62,7 +62,8 @@ export const useAuth = () => {
     const res = await authApi.register(creds);
     const profile = sanitizeUserProfile({ 
       ...res.user, 
-      rememberMe: creds.rememberMe 
+      rememberMe: creds.rememberMe,
+      token: res.token || null
     });
     setUserProfile(profile);
     toast.success("Welcome to Tasty Town!");

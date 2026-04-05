@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+const { hashSync, compareSync } = bcrypt;
+
 const customerSchema = new mongoose.Schema(
   {
     fullName: {
@@ -61,14 +63,23 @@ const customerSchema = new mongoose.Schema(
   }
 );
 
-customerSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 12);
-  next();
+customerSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
+  try {
+    this.password = hashSync(this.password, 12);
+  } catch (err) {
+    throw err;
+  }
 });
 
 customerSchema.methods.comparePassword = async function (candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+  try {
+    if (!this.password) return false;
+    return compareSync(candidatePassword, this.password);
+  } catch (err) {
+    console.error("comparePassword error:", err);
+    return false;
+  }
 };
 
 export default mongoose.model('Customer', customerSchema);

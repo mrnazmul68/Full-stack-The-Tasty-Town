@@ -18,11 +18,13 @@ const allowedOrigins = [
 const allowedOriginSet = new Set(allowedOrigins);
 const isLocalOrigin = (origin) =>
   /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+const isRenderOrigin = (origin) =>
+  /^https?:\/\/.*\.onrender\.com$/i.test(origin);
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOriginSet.has(origin) || isLocalOrigin(origin)) {
+      if (!origin || allowedOriginSet.has(origin) || isLocalOrigin(origin) || isRenderOrigin(origin)) {
         callback(null, true);
         return;
       }

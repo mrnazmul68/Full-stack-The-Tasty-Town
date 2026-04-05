@@ -8,7 +8,7 @@ const getLocalApiBaseUrl = () => {
   const { hostname, protocol, port } = window.location;
   const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
 
-  if (!isLocalHost || port === "5000") {
+  if (!isLocalHost || (port !== "5173" && port !== "3000")) {
     return "/api";
   }
 

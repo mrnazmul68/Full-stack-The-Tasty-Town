@@ -41,7 +41,11 @@ const Contact = ({ onSubmitReview, siteSettings, userProfile }) => {
     setIsSubmitting(true);
 
     try {
-      await onSubmitReview?.(formData);
+      const reviewData = {
+        ...formData,
+        photo: userProfile?.photo || "",
+      };
+      await onSubmitReview?.(reviewData);
       setFormData((current) => ({
         ...current,
         message: "",

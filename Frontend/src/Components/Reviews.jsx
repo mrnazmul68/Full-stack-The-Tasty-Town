@@ -1,13 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FiUser, FiStar } from 'react-icons/fi';
 
 const Reviews = ({ reviews = [] }) => {
   const scrollRef = useRef(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Auto-scroll logic
   useEffect(() => {
     const scrollContainer = scrollRef.current;
-    if (!scrollContainer || reviews.length === 0) return;
+    if (!scrollContainer || reviews.length === 0 || isPaused) return;
 
     let animationId;
     const scroll = () => {
@@ -22,7 +23,7 @@ const Reviews = ({ reviews = [] }) => {
     animationId = requestAnimationFrame(scroll);
 
     return () => cancelAnimationFrame(animationId);
-  }, [reviews]);
+  }, [reviews, isPaused]);
 
   // Duplicate reviews for seamless infinite scroll
   const displayReviews = [...reviews, ...reviews];
@@ -44,11 +45,21 @@ const Reviews = ({ reviews = [] }) => {
           {displayReviews.map((review, idx) => (
             <div 
               key={`${review._id}-${idx}`}
-              className="inline-block w-[350px] shrink-0 whitespace-normal rounded-[2rem] border border-white/10 bg-white/5 p-8 transition-all hover:border-orange-500/30 hover:bg-white/[0.08]"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              className="inline-block w-[350px] shrink-0 whitespace-normal rounded-[2rem] border border-white/10 bg-white/5 p-8 transition-all duration-300 hover:scale-105 hover:border-orange-500/30 hover:bg-white/[0.08] cursor-pointer"
             >
               <div className="mb-4 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/20 text-orange-500">
-                  <FiUser size={24} />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-500/20 text-orange-500 overflow-hidden">
+                  {review.photo ? (
+                    <img 
+                      src={review.photo} 
+                      alt={review.name} 
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <FiUser size={24} />
+                  )}
                 </div>
                 <div>
                   <h4 className="font-bold text-white">{review.name}</h4>

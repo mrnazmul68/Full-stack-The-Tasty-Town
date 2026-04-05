@@ -9,7 +9,7 @@ router.get("/", async (_req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { name, email, message, rating } = req.body;
+  const { name, email, message, rating, photo } = req.body;
 
   if (!name?.trim() || !email?.trim() || !message?.trim()) {
     return res.status(400).json({
@@ -22,6 +22,7 @@ router.post("/", async (req, res) => {
     email: email.trim().toLowerCase(),
     message: message.trim(),
     rating: Number(rating || 5),
+    photo: photo || "",
   });
 
   return res.status(201).json({

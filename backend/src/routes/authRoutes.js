@@ -81,6 +81,10 @@ router.post("/login", async (req, res) => {
         email: customer.email,
         fullName: customer.fullName,
         role: customer.role,
+        phone: customer.phone,
+        address: customer.address,
+        photo: customer.photo,
+        memberSince: customer.memberSince,
       },
     });
   } catch (error) {
@@ -140,6 +144,10 @@ router.post("/register", async (req, res) => {
         email: customer.email,
         fullName: customer.fullName,
         role: customer.role,
+        phone: customer.phone,
+        address: customer.address,
+        photo: customer.photo,
+        memberSince: customer.memberSince,
       },
     });
   } catch (error) {
